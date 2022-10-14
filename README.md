@@ -1,1 +1,0 @@
-# 2d-info-projekt
