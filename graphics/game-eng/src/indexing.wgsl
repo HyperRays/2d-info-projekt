@@ -25,26 +25,37 @@ struct FragmentInput {
 }
 
 @group(0) @binding(0)
-var texture_array: binding_array<texture_2d<f32>>;
+var texture_array_top: binding_array<texture_2d<f32>>;
 @group(0) @binding(1)
+var texture_array_bottom: binding_array<texture_2d<f32>>;
+@group(0) @binding(2)
 var sampler_array: binding_array<sampler>;
 
 struct Uniforms {
     index: u32,
 }
 
-@group(0) @binding(2)
+@group(0) @binding(3)
 var<uniform> uniforms: Uniforms;
 
 @fragment
 fn uniform_main(fragment: FragmentInput) -> @location(0) vec4<f32> {
     var outval: vec3<f32>;
-    outval = textureSampleLevel(
-        texture_array[uniforms.index],
-        sampler_array[uniforms.index],
-        fragment.tex_coord,
-        0.0
-    ).rgb;
+    if fragment.tex_coord.y <= 0.5 {
+        outval = textureSampleLevel(
+            texture_array_top[uniforms.index],
+            sampler_array[uniforms.index],
+            fragment.tex_coord,
+            0.0
+        ).rgb;
+    } else {
+        outval = textureSampleLevel(
+            texture_array_bottom[uniforms.index],
+            sampler_array[uniforms.index],
+            fragment.tex_coord,
+            0.0
+        ).rgb;
+    }
 
     return vec4<f32>(outval.x, outval.y, outval.z, 1.0);
 }
